@@ -11,7 +11,10 @@ import re
 from janome.tokenizer import Tokenizer
 import collections
 
-URL = 'https://www.aozora.gr.jp/cards/000096/files/2093_ruby_28087.zip'
+# ドグラ・マグラ
+# URL = 'https://www.aozora.gr.jp/cards/000096/files/2093_ruby_28087.zip'
+# 蟹工船
+URL = 'https://www.aozora.gr.jp/cards/000156/files/1465_ruby_16804.zip'
 tmp_dir = 'tmp/'
 OUTPUT_FILE = 'output.txt'
 
@@ -77,12 +80,17 @@ def convert(text):
     return text
 
 def wakati(text):
-    text = '\n'.join(text.split('\n')[:400])
+    # text = '\n'.join(text.split('\n')[:400])
     words = {}
     t = Tokenizer()
     # print([ token for token in  t.tokenize(text[:200])])
 
-    c = collections.Counter(t.tokenize(text, wakati=True))
+    # 単語頻度
+    # c = collections.Counter(t.tokenize(text, wakati=True))
+
+    # 特定の品詞のみ
+    c = collections.Counter(token.base_form for token in t.tokenize(text)
+                          if token.part_of_speech.startswith('名詞,固有名詞'))
     # for token in t.tokenize(text):
     #     word = token.surface
     #     words[word] = words.get(word, 0) + 1
@@ -96,7 +104,7 @@ def wakati(text):
 def main():
     zip_file = download_file(URL)
     filenames = unzip(zip_file, tmp_dir)
-    lines = readSjis(filenames[0])
+    lines = readSjis(filenames[1])
     print(lines[:10])
 
     # 作品情報
