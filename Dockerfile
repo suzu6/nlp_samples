@@ -13,7 +13,7 @@ ENV TERM xterm
 
 ADD . /code
 WORKDIR /code
-RUN apt-get install -y vim less \
+RUN apt-get install -y vim less unzip \
  && pip install --upgrade pip \
  && pip install --upgrade setuptools
 RUN pip install -r requirements.txt
