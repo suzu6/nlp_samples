@@ -27,11 +27,15 @@ class Exp(Function):
         return np.exp(x)
 
 if __name__ == "__main__":
-    data = np.array(10)
+    data = np.array(0.5)
+    A = Square()
+    B = Exp()
+    C = Square()
+
     x = Variable(data)
-    a = Square()
-    b = Exp()
-    y = b(a(x))
+    a = A(x)
+    b = B(a)
+    y = C(b)
     
     print(type(y))
     print(y.data)
