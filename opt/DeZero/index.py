@@ -57,17 +57,17 @@ class Exp(Function):
         gx = np.exp(x) * gy
         return gx
 
+def square(x):
+    return Square()(x)
+
+def exp(x):
+    return Exp()(x)
+
 if __name__ == "__main__":
     data = np.array(0.5)
-    A = Square()
-    B = Exp()
-    C = Square()
-
     # forward
     x = Variable(data)
-    a = A(x)
-    b = B(a)
-    y = C(b)
+    y = square(exp(square(x)))
     
     print(type(y))
     print(y.data)
