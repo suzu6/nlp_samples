@@ -18,7 +18,7 @@ def downloadFile(url: str, target_dir='./') -> Union[str, bool]:
     """
     filename = target_dir + url.split('/')[-1]
     if os.path.exists(filename):
-        # 負荷をかけないため
+        # サイトに負荷をかけないため
         print(filename, 'is downloaded already.')
         return filename
     r = requests.get(url, stream=True)
@@ -50,7 +50,9 @@ def unzip(filename: str, target_dir='./') -> list:
     return dst_filenames
 
 
-def readSjis(path):
+def readSjis(path: str) -> str:
+    """ShiftJISのテキストを読み込む
+    """
     with open(path, mode="r", encoding='shift_jis') as f:
         text = f.read()
     return text
@@ -59,8 +61,9 @@ def readSjis(path):
 def preproccessing(text):
     """テキストの前処理をする
     """
-    # 作品情報
     lines = text.split('\n')
+    print('処理前 文字数:', len(text), ', 行数:', len(lines))
+    # 作品情報
     title = lines[0].strip()
     author = lines[1].strip()
     print(title, author)
@@ -75,22 +78,26 @@ def preproccessing(text):
     # 複数の改行
     text = re.sub(r'\n+', '\n', text)
     text = text.strip()
+
+    lines = text.split('\n')
+    print('処理後 文字数:', len(text), ', 行数:', len(lines))
     return text
 
 
-def wakati(text):
+def wakati(text: str):
     """テキストを分かち書きにして頻出単語を求める
     """
     t = Tokenizer()
     # 単語頻度
-    # c = collections.Counter(t.tokenize(text, wakati=True))
+    c = collections.Counter(t.tokenize(text, wakati=True))
+    print(*c.most_common()[:15], sep='\n')
+    print()
 
     # 特定の品詞のみ
     c = collections.Counter(token.base_form for token in t.tokenize(text)
                             if token.part_of_speech.startswith('名詞,固有名詞'))
-
     # 降順で表示
-    print(c.most_common()[:30])
+    print(*c.most_common()[:15], sep='\n')
 
 
 def main():
