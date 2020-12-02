@@ -27,34 +27,42 @@ class Variable:
             if x.creator is not None:
                 funcs.append(x.creator)
 
-def asarray(x):
+def as_array(x):
     if np.isscalar(x):
         return np.array(x)
     return x
 
 class Function:
-    def __call__(self, input: Variable) -> Variable:
-        x = input.data
-        y = self.forward(x)
-        output = Variable(asarray(y))
-        output.set_creator(self)
-        self.input = input
-        self.output = output
-        return output
+    def __call__(self, inputs):
+        xs = [x.data for x in inputs]
+        ys = self.forward(xs)
+        outputs = [Variable(as_array(y)) for y in ys]
+
+        for output in outputs:
+            output.set_creator(self)
+        self.inputs = inputs
+        self.outputs = outputs
+        return outputs
     
-    def forward(self, x):
+    def forward(self, xs):
         raise NotImplementedError()
         
-    def backward(self, gy):
+    def backward(self, gys):
         raise NotImplementedError()
 
+
+class Add(Function):
+    def forward(self, xs):
+        x0, x1 = xs
+        y = x0 + x1
+        return (y,)
 
 class Square(Function):
     def forward(self, x):
         return x ** 2
     
     def backward(self, gy):
-        x = self.input.data
+        x = self.inputs.data
         gx = 2 * x * gy
         return gx
 
@@ -64,7 +72,7 @@ class Exp(Function):
         return np.exp(x)
         
     def backward(self, gy):
-        x = self.input.data
+        x = self.inputs.data
         gx = np.exp(x) * gy
         return gx
 
@@ -75,7 +83,8 @@ def exp(x):
     return Exp()(x)
 
 if __name__ == "__main__":
-    x = Variable(np.array(0.5))
-    y = square(exp(square(x)))
-    y.backward()
-    print(x.grad)
+    xs = [Variable(np.array(0.5)), Variable(np.array(0.5))]
+    f = Add()
+    ys = f(xs)
+    y = ys[0]
+    print(y.data)
