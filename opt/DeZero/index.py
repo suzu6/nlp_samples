@@ -3,6 +3,10 @@ import numpy as np
 
 class Variable:
     def __init__(self, data):
+        if data is not None:
+            if not isinstance(data, np.ndarray):
+                raise TypeError('{} is not supported'.format(type(data)))
+
         self.data = data
         self.grad = None
         self.creator = None
@@ -11,6 +15,9 @@ class Variable:
         self.creator = func
 
     def backward(self):
+        if self.grad is None:
+            self.grad = np.ones_like(self.data)
+
         funcs = [self.creator]
         while funcs:
             f = funcs.pop()
@@ -64,15 +71,7 @@ def exp(x):
     return Exp()(x)
 
 if __name__ == "__main__":
-    data = np.array(0.5)
-    # forward
-    x = Variable(data)
+    x = Variable(np.array([0.5, 0.5]))
     y = square(exp(square(x)))
-    
-    print(type(y))
-    print(y.data)
-
-    # backward
-    y.grad = np.array(1.0)
     y.backward()
     print(x.grad)
