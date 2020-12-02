@@ -27,12 +27,16 @@ class Variable:
             if x.creator is not None:
                 funcs.append(x.creator)
 
+def asarray(x):
+    if np.isscalar(x):
+        return np.array(x)
+    return x
 
 class Function:
     def __call__(self, input: Variable) -> Variable:
         x = input.data
         y = self.forward(x)
-        output = Variable(y)
+        output = Variable(asarray(y))
         output.set_creator(self)
         self.input = input
         self.output = output
@@ -71,7 +75,7 @@ def exp(x):
     return Exp()(x)
 
 if __name__ == "__main__":
-    x = Variable(np.array([0.5, 0.5]))
+    x = Variable(np.array(0.5))
     y = square(exp(square(x)))
     y.backward()
     print(x.grad)
