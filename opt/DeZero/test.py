@@ -16,6 +16,18 @@ class SquareTest(unittest.TestCase):
         expected = np.array(6.0)
         self.assertEqual(x.grad, expected)
 
-
+class ExeTest(unittest.TestCase):
+    def test_forward(self):
+        x = dz.Variable(np.array(2.0))
+        y = dz.exp(x)
+        expected = np.exp(2.0)
+        self.assertEqual(y.data, expected)
+    
+    def test_backward(self):
+        x = dz.Variable(np.array(2.0))
+        y = dz.exp(x)
+        y.backward()
+        expected = np.exp(2.0)
+        self.assertEqual(x.grad, expected)
 
 unittest.main()
