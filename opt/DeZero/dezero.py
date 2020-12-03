@@ -33,7 +33,7 @@ def as_array(x):
     return x
 
 class Function:
-    def __call__(self, inputs):
+    def __call__(self, *inputs):
         xs = [x.data for x in inputs]
         ys = self.forward(xs)
         outputs = [Variable(as_array(y)) for y in ys]
@@ -42,7 +42,7 @@ class Function:
             output.set_creator(self)
         self.inputs = inputs
         self.outputs = outputs
-        return outputs
+        return outputs if len(outputs) > 1 else outputs[0]
     
     def forward(self, xs):
         raise NotImplementedError()
@@ -83,8 +83,8 @@ def exp(x):
     return Exp()(x)
 
 if __name__ == "__main__":
-    xs = [Variable(np.array(0.5)), Variable(np.array(0.5))]
+    x0 = Variable(np.array(0.5))
+    x1 = Variable(np.array(0.5))
     f = Add()
-    ys = f(xs)
-    y = ys[0]
+    y = f(x0, x1)
     print(y.data)
