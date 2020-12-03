@@ -35,7 +35,9 @@ def as_array(x):
 class Function:
     def __call__(self, *inputs):
         xs = [x.data for x in inputs]
-        ys = self.forward(xs)
+        ys = self.forward(*xs)
+        if not isinstance(ys, tuple):
+            ys = (ys,)
         outputs = [Variable(as_array(y)) for y in ys]
 
         for output in outputs:
@@ -52,10 +54,9 @@ class Function:
 
 
 class Add(Function):
-    def forward(self, xs):
-        x0, x1 = xs
+    def forward(self, x0, x1):
         y = x0 + x1
-        return (y,)
+        return y
 
 class Square(Function):
     def forward(self, x):
@@ -76,6 +77,9 @@ class Exp(Function):
         gx = np.exp(x) * gy
         return gx
 
+def add(x0, x1):
+    return Add()(x0, x1)
+
 def square(x):
     return Square()(x)
 
@@ -85,6 +89,5 @@ def exp(x):
 if __name__ == "__main__":
     x0 = Variable(np.array(0.5))
     x1 = Variable(np.array(0.5))
-    f = Add()
-    y = f(x0, x1)
+    y = add(x0, x1)
     print(y.data)
