@@ -27,13 +27,19 @@ class Variable:
                 gxs = (gxs,)
             
             for x, gx in zip(f.inputs, gxs):
-                x.grad = gx
+                if x.grad is None:
+                    x.grad = gx
+                else:
+                    x.grad = x.grad + gx
 
                 if x.creator is not None:
                     funcs.append(x.creator)
             
             if x.creator is not None:
                 funcs.append(x.creator)
+    
+    def cleargrad(self):
+        self.grad = None
 
 def as_array(x):
     if np.isscalar(x):
@@ -98,10 +104,12 @@ def exp(x):
     return Exp()(x)
 
 if __name__ == "__main__":
-    x = Variable(np.array(2.0))
-    y = Variable(np.array(3.0))
-    z = add(square(x), square(y))
-    z.backward()
-    print(z.data)
+    x = Variable(np.array(5.0))
+    y = add(x, x)
+    y.backward()
     print(x.grad)
-    print(y.grad)
+
+    x.cleargrad()
+    y = add(add(x, x), x)
+    y.backward()
+    print(x.grad)
