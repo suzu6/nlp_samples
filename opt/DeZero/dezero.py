@@ -173,13 +173,18 @@ def mul(x0, x1):
     return Mul()(x0, x1)
 
 
+
+Variable.__mul__ = mul
+Variable.__add__ = add
+
+
 if __name__ == "__main__":
 
     with using_config('enable_backprop', True):
         a = Variable(np.array(3.0))
         b = Variable(np.array(2.0))
         c = Variable(np.array(1.0))
-        y = add(mul(a, b), c)
+        y = a * b + c
         y.backward()
         print(y)
         print(a.grad)
