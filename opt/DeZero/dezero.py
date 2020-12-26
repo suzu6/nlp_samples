@@ -158,23 +158,29 @@ class Add(Function):
 def add(x0, x1):
     return Add()(x0, x1)
 
+
+class Mul(Function):
+    def forward(self, x0, x1):
+        y = x0 * x1
+        return y
+
+    def backward(self, gy):
+        x0, x1 = self.inputs[0].data, self.inputs[1].data
+        return gy * x1, gy * x0
+
+
+def mul(x0, x1):
+    return Mul()(x0, x1)
+
+
 if __name__ == "__main__":
-    x0 = Variable(np.array(1.0))
-    x1 = Variable(np.array(1.0))
-    t = add(x0, x1)
-    y = add(x0, t)
-    y.backward()
-    print(y.grad, t.grad)  # None None
-    print(x0.grad, x1.grad)  # 2.0 1.0
 
-
-    with using_config('enable_backprop', False):
-        x = Variable(np.array([[1, 2, 3], [4, 5, 6]]))
-        print(x.shape)
-        print(len(x))
-        print(x)
-        y = square(x)
-
-    with no_grad():
-        x = Variable(np.array(2.0))
-        y = square(x)
+    with using_config('enable_backprop', True):
+        a = Variable(np.array(3.0))
+        b = Variable(np.array(2.0))
+        c = Variable(np.array(1.0))
+        y = add(mul(a, b), c)
+        y.backward()
+        print(y)
+        print(a.grad)
+        print(b.grad)
