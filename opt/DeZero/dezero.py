@@ -56,6 +56,15 @@ class Variable:
     def dtype(self):
         return self.data.dtype
 
+    def __len__(self):
+        return len(self.data)
+    
+    def __repr__(self):
+        if self.data is None:
+            return 'variable(None)'
+        p = str(self.data).replace('\n', '\n' + ' ' * 9)
+        return 'variable(' + p + ')'
+
     def backward(self, retain_grad=False):
         if self.grad is None:
             self.grad = np.ones_like(self.data)
@@ -161,7 +170,9 @@ if __name__ == "__main__":
 
     with using_config('enable_backprop', False):
         x = Variable(np.array([[1, 2, 3], [4, 5, 6]]))
-        print(x.shape)  # None None
+        print(x.shape)
+        print(len(x))
+        print(x)
         y = square(x)
 
     with no_grad():
