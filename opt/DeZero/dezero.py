@@ -39,6 +39,22 @@ class Variable:
 
     def cleargrad(self):
         self.grad = None
+    
+    @property
+    def shape(self):
+        return self.data.shape
+    
+    @property
+    def ndim(self):
+        return self.data.ndim
+
+    @property
+    def size(self):
+        return self.data.size
+    
+    @property
+    def dtype(self):
+        return self.data.dtype
 
     def backward(self, retain_grad=False):
         if self.grad is None:
@@ -144,7 +160,8 @@ if __name__ == "__main__":
 
 
     with using_config('enable_backprop', False):
-        x = Variable(np.array(2.0))
+        x = Variable(np.array([[1, 2, 3], [4, 5, 6]]))
+        print(x.shape)  # None None
         y = square(x)
 
     with no_grad():
